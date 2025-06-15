@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рудки - перлина Львівської області</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0057b7;
+            --secondary: #ffd700;
+            --accent: #4d7c0f;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --dark-bg: #1a1d21;
+            --dark-text: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+            background-color: #fff;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        body.dark-theme {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .dark-theme .card,
+        .dark-theme .business-filter,
+        .dark-theme .contact-card,
+        .dark-theme .feature-card,
+        .dark-theme .event-card,
+        .dark-theme .testimonial-content {
+            background-color: #2a2e33;
+            color: var(--dark-text);
+            border-color: #3a3f46;
+        }
+
+        .dark-theme .list-group-item {
+            background-color: #2a2e33;
+            color: var(--dark-text);
+            border-color: #3a3f46;
+        }
+
+        .dark-theme .form-control {
+            background-color: #2a2e33;
+            color: var(--dark-text);
+            border-color: #3a3f46;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .controls-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .music-btn.active {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+
+        .language-dropdown {
+            position: relative;
+        }
+
+        .language-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none;
+            z-index: 1001;
+        }
+
+        .dark-theme .language-menu {
+            background: #2a2e33;
+        }
+
+        .language-menu.active {
+            display: block;
+        }
+
+        .language-option {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .language-option:hover {
+            background: #f0f0f0;
+        }
+
+        .dark-theme .language-option:hover {
+            background: #3a3f46;
+        }
+
+        .language-option img {
+            width: 24px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://photos.drymba.com/drb/000/102/10279_f9d_ht8k95.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .btn-gold {
+            background-color: var(--secondary);
+            color: var(--dark);
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: all 0.3s;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-gold:hover {
+            background-color: #e6c200;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            position: relative;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+        }
+
+        .about {
+            background-color: var(--light);
+        }
+
+        .dark-theme .about {
+            background-color: #1e2125;
+        }
+
+        .about-img {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: transform 0.3s;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .about-img:hover {
+            transform: scale(1.03);
+        }
+
+        .weather-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+
+        .dark-theme .weather-card {
+            background: #2a2e33;
+        }
+
+        .weather-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+        }
+
+        .weather-info {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .counter-section {
+            background-color: var(--primary);
+            color: white;
+            padding: 60px 0;
+        }
+
+        .counter-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .counter-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .features {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+        }
+
+        .dark-theme .features {
+            background: linear-gradient(to bottom, #1e2125, #17191d);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            height: 100%;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .events {
+            background: linear-gradient(to bottom, #e9ecef, #f8f9fa);
+        }
+
+        .dark-theme .events {
+            background: linear-gradient(to bottom, #17191d, #1e2125);
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .event-date {
+            background: var(--primary);
+            color: white;
+            min-width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .event-date .day {
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .event-date .month {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .event-content {
+            padding: 20px;
+        }
+
+        .event-content h4 {
+            color: var(--primary);
+        }
+
+        .gallery {
+            background-color: var(--light);
+        }
+
+        .dark-theme .gallery {
+            background-color: #1e2125;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            height: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            color: white;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .business-section {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+        }
+
+        .dark-theme .business-section {
+            background: linear-gradient(to bottom, #1e2125, #17191d);
+        }
+
+        .business-card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            height: 100%;
+            background: white;
+            margin-bottom: 30px;
+        }
+
+        .business-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .business-img {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .business-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .business-card:hover .business-img img {
+            transform: scale(1.1);
+        }
+
+        .business-content {
+            padding: 20px;
+        }
+
+        #business-container .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .business-category {
+            display: inline-block;
+            background: var(--secondary);
+            color: var(--dark);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .business-rating {
+            color: var(--secondary);
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+
+        .business-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .dark-theme .business-meta {
+            border-top: 1px solid #3a3f46;
+        }
+
+        .business-filter {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .filter-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .list-group-item {
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            border-left: 3px solid transparent;
+            padding: 10px 15px;
+        }
+
+        .list-group-item:hover,
+        .list-group-item.active {
+            background: rgba(0, 87, 183, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .dark-theme .list-group-item:hover,
+        .dark-theme .list-group-item.active {
+            background: rgba(0, 87, 183, 0.2);
+        }
+
+        .map-container {
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .contact {
+            background-color: var(--light);
+        }
+
+        .dark-theme .contact {
+            background-color: #1e2125;
+        }
+
+        .contact-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            height: 100%;
+        }
+
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 10px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            background: var(--secondary);
+            color: var(--dark);
+            transform: translateY(-5px);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .dark-theme .audio-player {
+            background: rgba(42, 46, 51, 0.9);
+        }
+
+        .audio-player.hidden {
+            transform: translateY(100px);
+            opacity: 0;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .audio-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .audio-btn:hover {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            -webkit-appearance: none;
+            height: 5px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Language containers */
+        .language-container {
+            display: none;
+        }
+
+        .language-container.active {
+            display: block;
+        }
+
+        /* Spinner animation */
+        .fa-spin {
+            animation: fa-spin 2s infinite linear;
+        }
+
+        @keyframes fa-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .controls-container {
+                top: 10px;
+                right: 10px;
+            }
+
+            .control-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .audio-player {
+                left: 10px;
+                right: 10px;
+                width: calc(100% - 20px);
+                bottom: 10px;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Controls -->
+    <div class="controls-container">
+        <div class="language-dropdown">
+            <div class="control-btn language-btn">
+                <i class="fas fa-globe"></i>
+            </div>
+            <div class="language-menu">
+                <div class="language-option" data-lang="uk">
+                    <img src="https://flagcdn.com/ua.svg" alt="Ukrainian">
+                    <span>Українська</span>
+                </div>
+                <div class="language-option" data-lang="en">
+                    <img src="https://flagcdn.com/gb.svg" alt="English">
+                    <span>English</span>
+                </div>
+            </div>
+        </div>
+        <div class="control-btn music-btn">
+            <i class="fas fa-music"></i>
+        </div>
+        <div class="control-btn theme-btn">
+            <i class="fas fa-moon"></i>
+        </div>
+    </div>
+
+    <!-- Audio Player -->
+    <div class="audio-player hidden">
+        <div class="audio-controls">
+            <button class="audio-btn play-btn">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="audio-btn pause-btn">
+                <i class="fas fa-pause"></i>
+            </button>
+        </div>
+        <div class="volume-container">
+            <i class="fas fa-volume-up"></i>
+            <input type="range" min="0" max="1" step="0.1" value="0.5" class="volume-slider">
+        </div>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="background-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <!-- Ukrainian content -->
+                <div class="language-container active" data-lang="uk">
+                    <h1>Рудки - перлина Львівщини</h1>
+                    <p>Мальовниче містечко в Самбірському районі з багатою історією та неповторною атмосферою</p>
+                    <a href="#about" class="btn btn-gold">Дізнатися більше</a>
+                </div>
+
+                <!-- English content -->
+                <div class="language-container" data-lang="en">
+                    <h1>Rudky - Pearl of Lviv Region</h1>
+                    <p>A picturesque town in Sambir district with rich history and unique atmosphere</p>
+                    <a href="#about" class="btn btn-gold">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section about">
+        <div class="container">
+            <div class="language-container active" data-lang="uk">
+                <h2 class="section-title">Про наше місто</h2>
+            </div>
+            <div class="language-container" data-lang="en">
+                <h2 class="section-title">About Our Town</h2>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="about-img fade-in">
+                        <img src="https://ua.igotoworld.com/frontend/webcontent/websites/1/images/gallery/10720_800x600_87917131.jpg"
+                            alt="Panorama of Rudky" class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="fade-in">
+                        <!-- Ukrainian content -->
+                        <div class="language-container active" data-lang="uk">
+                            <h3 class="mb-4">Рудки - маленьке місто з великою душею</h3>
+                            <p>Розташоване в мальовничому куточку Львівської області, місто Рудки вражає своєю красою та
+                                багатою історією. Засноване ще в середні віки, воно зберігає дух минулих століть у своїй
+                                архітектурі та традиціях.</p>
+                            <p>Сьогодні Рудки - це сучасний адміністративний центр, де поєднуються історична спадщина та
+                                новітній розвиток. Місто славиться своїми природними красотами, чистими лісами та
+                                річками, що робить його привабливим для туристів та любителів природи.</p>
+                            <p>Місцеві жителі пишаються своєю культурою, традиціями та гостинністю, яка вражає кожного
+                                гостя.</p>
+                        </div>
+
+                        <!-- English content -->
+                        <div class="language-container" data-lang="en">
+                            <h3 class="mb-4">Rudky - Small Town with Big Soul</h3>
+                            <p>Located in a picturesque corner of Lviv region, Rudky amazes with its beauty and rich
+                                history. Founded in the Middle Ages, it preserves the spirit of past centuries in its
+                                architecture and traditions.</p>
+                            <p>Today, Rudky is a modern administrative center where historical heritage meets modern
+                                development. The town is famous for its natural beauty, clean forests and rivers, making
+                                it attractive for tourists and nature lovers.</p>
+                            <p>Local residents are proud of their culture, traditions and hospitality that impresses
+                                every guest.</p>
+                        </div>
+
+                        <!-- Weather Card - Single Element -->
+                        <div class="weather-card mt-4">
+                            <div class="d-flex align-items-center">
+                                <div class="weather-icon me-3" id="weather-icon">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0" id="weather-title">Погода в Рудках</h5>
+                                    <div class="weather-info" id="weather-info">
+                                        <span id="weather-text">Завантаження...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Counter Section -->
+    <section class="counter-section">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3 col-6 counter-item">
+                    <div class="counter-number" id="population-counter">0</div>
+                    <div class="language-container active" data-lang="uk">Населення</div>
+                    <div class="language-container" data-lang="en">Population</div>
+                </div>
+                <div class="col-md-3 col-6 counter-item">
+                    <div class="counter-number" id="year-counter">0</div>
+                    <div class="language-container active" data-lang="uk">Рік заснування</div>
+                    <div class="language-container" data-lang="en">Year Founded</div>
+                </div>
+                <div class="col-md-3 col-6 counter-item">
+                    <div class="counter-number" id="attraction-counter">0</div>
+                    <div class="language-container active" data-lang="uk">Визначні місця</div>
+                    <div class="language-container" data-lang="en">Attractions</div>
+                </div>
+                <div class="col-md-3 col-6 counter-item">
+                    <div class="counter-number" id="area-counter">0</div>
+                    <div class="language-container active" data-lang="uk">Площа (км²)</div>
+                    <div class="language-container" data-lang="en">Area (km²)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section features">
+        <div class="container">
+            <div class="language-container active" data-lang="uk">
+                <h2 class="section-title">Чим славиться Рудки</h2>
+            </div>
+            <div class="language-container" data-lang="en">
+                <h2 class="section-title">What Rudky is Famous For</h2>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <div class="language-container active" data-lang="uk">
+                            <h4>Історичні пам'ятки</h4>
+                            <p>Замки, церкви та архітектурні пам'ятки, що зберегли дух середньовіччя</p>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h4>Historical Sites</h4>
+                            <p>Castles, churches and architectural monuments preserving the spirit of the Middle Ages
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <div class="language-container active" data-lang="uk">
+                            <h4>Природні багатства</h4>
+                            <p>Чисті річки, мальовничі ліси та унікальні природні заповідники</p>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h4>Natural Treasures</h4>
+                            <p>Clean rivers, picturesque forests and unique nature reserves</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="language-container active" data-lang="uk">
+                            <h4>Кулінарні традиції</h4>
+                            <p>Автентична гуцульська кухня та смачні місцеві страви</p>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h4>Culinary Traditions</h4>
+                            <p>Authentic Hutsul cuisine and delicious local dishes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <div class="language-container active" data-lang="uk">
+                            <h4>Фестивалі</h4>
+                            <p>Щорічні культурні події та фестивалі народної творчості</p>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h4>Festivals</h4>
+                            <p>Annual cultural events and folk art festivals</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="section events">
+        <div class="container">
+            <div class="language-container active" data-lang="uk">
+                <h2 class="section-title">Найближчі події</h2>
+            </div>
+            <div class="language-container" data-lang="en">
+                <h2 class="section-title">Upcoming Events</h2>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="event-card fade-in">
+                        <div class="event-date">
+                            <div class="day">15</div>
+                            <div class="language-container active" data-lang="uk">Черв</div>
+                            <div class="language-container" data-lang="en">Jun</div>
+                        </div>
+                        <div class="event-content">
+                            <div class="language-container active" data-lang="uk">
+                                <h4>Фестиваль народної творчості</h4>
+                                <p>Центральний майдан, 10:00-20:00</p>
+                                <p>Щорічний фестиваль з виступами фольклорних колективів, майстер-класами та ярмарком.
+                                </p>
+                            </div>
+                            <div class="language-container" data-lang="en">
+                                <h4>Folk Art Festival</h4>
+                                <p>Central Square, 10:00-20:00</p>
+                                <p>Annual festival with performances by folk groups, workshops and fair.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="event-card fade-in">
+                        <div class="event-date">
+                            <div class="day">22</div>
+                            <div class="language-container active" data-lang="uk">Черв</div>
+                            <div class="language-container" data-lang="en">Jun</div>
+                        </div>
+                        <div class="event-content">
+                            <div class="language-container active" data-lang="uk">
+                                <h4>День міста Рудки</h4>
+                                <p>Парк культури, 12:00-23:00</p>
+                                <p>Святкування дня міста з концертом, феєрверком та розвагами для всієї родини.</p>
+                            </div>
+                            <div class="language-container" data-lang="en">
+                                <h4>Rudky City Day</h4>
+                                <p>Culture Park, 12:00-23:00</p>
+                                <p>City day celebration with concert, fireworks and family entertainment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="event-card fade-in">
+                        <div class="event-date">
+                            <div class="day">30</div>
+                            <div class="language-container active" data-lang="uk">Черв</div>
+                            <div class="language-container" data-lang="en">Jun</div>
+                        </div>
+                        <div class="event-content">
+                            <div class="language-container active" data-lang="uk">
+                                <h4>Екскурсія історичними місцями</h4>
+                                <p>Збір біля ратуші, 9:00-14:00</p>
+                                <p>Безкоштовна екскурсія найцікавішими історичними місцями міста з гідом.</p>
+                            </div>
+                            <div class="language-container" data-lang="en">
+                                <h4>Historical Tour</h4>
+                                <p>Meeting at Town Hall, 9:00-14:00</p>
+                                <p>Free guided tour to the most interesting historical places of the city.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="section gallery">
+        <div class="container">
+            <div class="language-container active" data-lang="uk">
+                <h2 class="section-title">Краєвиди Рудок</h2>
+            </div>
+            <div class="language-container" data-lang="en">
+                <h2 class="section-title">Views of Rudky</h2>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="gallery-item fade-in">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Dendropark_%28Rudky%29-4.jpg/330px-Dendropark_%28Rudky%29-4.jpg"
+                            alt="Nature of Rudky">
+                        <div class="gallery-overlay">
+                            <div class="language-container active" data-lang="uk">
+                                <h5>Природні краєвиди</h5>
+                                <p>Мальовничі панорами навколишніх гір та долин</p>
+                            </div>
+                            <div class="language-container" data-lang="en">
+                                <h5>Natural Landscapes</h5>
+                                <p>Picturesque panoramas of surrounding mountains and valleys</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="gallery-item fade-in">
+                        <img src="https://vidviday.ua/storage/media/place/16039/kostel-rudki-1.jpg" alt="Architecture">
+                        <div class="gallery-overlay">
+                            <div class="language-container active" data-lang="uk">
+                                <h5>Історична архітектура</h5>
+                                <p>Старовинні будівлі та церкви</p>
+                            </div>
+                            <div class="language-container" data-lang="en">
+                                <h5>Historical Architecture</h5>
+                                <p>Ancient buildings and churches</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="gallery-item fade-in">
+                        <img src="https://cdn-media.choiceqr.com/prod-eat-moon-rabbits/menu/WTiBoCO-argNPfy-AgAOkdJ.jpeg"
+                            alt="Cuisine">
+                        <div class="gallery-overlay">
+                            <div class="language-container active" data-lang="uk">
+                                <h5>Місцева кухня</h5>
+                                <p>Автентичні страви та напої</p>
+                            </div>
+                            <div class="language-container" data-lang="en">
+                                <h5>Local Cuisine</h5>
+                                <p>Authentic dishes and drinks</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Section -->
+    <section id="business" class="section business-section">
+        <div class="container">
+            <div class="language-container active" data-lang="uk">
+                <h2 class="section-title text-center mb-5">Місцеві підприємства</h2>
+            </div>
+            <div class="language-container" data-lang="en">
+                <h2 class="section-title text-center mb-5">Local Businesses</h2>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="business-filter fade-in">
+                        <div class="language-container active" data-lang="uk">
+                            <h4 class="filter-title">Категорії</h4>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h4 class="filter-title">Categories</h4>
+                        </div>
+
+                        <div class="list-group">
+                            <div class="list-group-item active" data-category="all">
+                                <div class="language-container active" data-lang="uk">Всі</div>
+                                <div class="language-container" data-lang="en">All</div>
+                            </div>
+                            <div class="list-group-item" data-category="cafe">
+                                <i class="fas fa-coffee me-2"></i>
+                                <div class="language-container active" data-lang="uk">Кафе та ресторани</div>
+                                <div class="language-container" data-lang="en">Cafes & Restaurants</div>
+                            </div>
+                            <div class="list-group-item" data-category="shop">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                <div class="language-container active" data-lang="uk">Магазини</div>
+                                <div class="language-container" data-lang="en">Shops</div>
+                            </div>
+                            <div class="list-group-item" data-category="hotel">
+                                <i class="fas fa-bed me-2"></i>
+                                <div class="language-container active" data-lang="uk">Житло</div>
+                                <div class="language-container" data-lang="en">Accommodation</div>
+                            </div>
+                            <div class="list-group-item" data-category="service">
+                                <i class="fas fa-tools me-2"></i>
+                                <div class="language-container active" data-lang="uk">Послуги</div>
+                                <div class="language-container" data-lang="en">Services</div>
+                            </div>
+                        </div>
+
+                        <div class="language-container active" data-lang="uk">
+                            <h4 class="filter-title mt-4">Пошук</h4>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h4 class="filter-title mt-4">Search</h4>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="business-search" placeholder="Назва, опис...">
+                            <button class="btn btn-primary" type="button" id="search-button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="row" id="business-container">
+                        <!-- Businesses will be added by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="section">
+        <div class="container">
+            <div class="language-container active" data-lang="uk">
+                <h2 class="section-title">Карта Рудок</h2>
+            </div>
+            <div class="language-container" data-lang="en">
+                <h2 class="section-title">Rudky Map</h2>
+            </div>
+
+            <div class="map-container fade-in" id="map"></div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section contact">
+        <div class="container">
+            <div class="language-container active" data-lang="uk">
+                <h2 class="section-title">Як нас знайти</h2>
+            </div>
+            <div class="language-container" data-lang="en">
+                <h2 class="section-title">How to Find Us</h2>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="contact-card fade-in">
+                        <div class="language-container active" data-lang="uk">
+                            <h3 class="mb-4">Контактна інформація</h3>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h3 class="mb-4">Contact Information</h3>
+                        </div>
+
+                        <p><i class="fas fa-map-marker-alt me-2"></i> Львівська область, Самбірський район, м. Рудки</p>
+                        <p><i class="fas fa-phone me-2"></i> +380 67 872 012</p>
+                        <p><i class="fas fa-envelope me-2"></i> info@rudky-rada.gov.ua</p>
+
+                        <div class="language-container active" data-lang="uk">
+                            <p><i class="fas fa-clock me-2"></i> Адміністрація: Пн-Пт 9:00-18:00</p>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <p><i class="fas fa-clock me-2"></i> Administration: Mon-Fri 9:00-18:00</p>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="language-container active" data-lang="uk">
+                            <h4 class="mb-3">Туристичний інформаційний центр</h4>
+                            <p>Надаємо інформацію про пам'ятки, маршрути, екскурсії та місця проживання.</p>
+                            <a href="#" class="btn btn-primary">Забронювати екскурсію</a>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h4 class="mb-3">Tourist Information Center</h4>
+                            <p>We provide information about attractions, routes, tours and accommodation.</p>
+                            <a href="#" class="btn btn-primary">Book a Tour</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="contact-card fade-in">
+                        <div class="language-container active" data-lang="uk">
+                            <h3 class="mb-4">Залишити повідомлення</h3>
+                        </div>
+                        <div class="language-container" data-lang="en">
+                            <h3 class="mb-4">Leave a Message</h3>
+                        </div>
+
+                        <form>
+                            <div class="mb-3">
+                                <div class="language-container active" data-lang="uk">
+                                    <label for="name" class="form-label">Ваше ім'я</label>
+                                </div>
+                                <div class="language-container" data-lang="en">
+                                    <label for="name" class="form-label">Your Name</label>
+                                </div>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <div class="language-container active" data-lang="uk">
+                                    <label for="message" class="form-label">Повідомлення</label>
+                                </div>
+                                <div class="language-container" data-lang="en">
+                                    <label for="message" class="form-label">Message</label>
+                                </div>
+                                <textarea class="form-control" id="message" rows="5" required></textarea>
+                            </div>
+                            <div class="language-container active" data-lang="uk">
+                                <button type="submit" class="btn btn-primary">Надіслати</button>
+                            </div>
+                            <div class="language-container" data-lang="en">
+                                <button type="submit" class="btn btn-primary">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h3 class="mb-4">Рудки</h3>
+                    <div class="language-container active" data-lang="uk">
+                        <p>Маленьке місто з великим серцем у самому центрі Львівщини. Приїжджайте та відкрийте для себе
+                            його неповторний шарм.</p>
+                    </div>
+                    <div class="language-container" data-lang="en">
+                        <p>A small town with a big heart in the center of Lviv region. Come and discover its unique
+                            charm.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="language-container active" data-lang="uk">
+                        <h4 class="mb-4">Швидкі посилання</h4>
+                    </div>
+                    <div class="language-container" data-lang="en">
+                        <h4 class="mb-4">Quick Links</h4>
+                    </div>
+
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#about" class="text-white text-decoration-none">
+                                <div class="language-container active" data-lang="uk">Про місто</div>
+                                <div class="language-container" data-lang="en">About Town</div>
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#features" class="text-white text-decoration-none">
+                                <div class="language-container active" data-lang="uk">Особливості</div>
+                                <div class="language-container" data-lang="en">Features</div>
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#gallery" class="text-white text-decoration-none">
+                                <div class="language-container active" data-lang="uk">Галерея</div>
+                                <div class="language-container" data-lang="en">Gallery</div>
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#business" class="text-white text-decoration-none">
+                                <div class="language-container active" data-lang="uk">Бізнеси</div>
+                                <div class="language-container" data-lang="en">Businesses</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#contact" class="text-white text-decoration-none">
+                                <div class="language-container active" data-lang="uk">Контакти</div>
+                                <div class="language-container" data-lang="en">Contact</div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <div class="language-container active" data-lang="uk">
+                        <h4 class="mb-4">Соціальні мережі</h4>
+                    </div>
+                    <div class="language-container" data-lang="en">
+                        <h4 class="mb-4">Social Networks</h4>
+                    </div>
+
+                    <div class="d-flex justify-content-center justify-content-md-start">
+                        <a href="https://www.facebook.com/groups/1834114729963483/?locale=uk_UA" class="social-icon"><i
+                                class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 bg-light">
+            <div class="text-center">
+                <div class="language-container active" data-lang="uk">
+                    <p>&copy; 2025 Рудки - Офіційний сайт міста. Всі права захищені.</p>
+                </div>
+                <div class="language-container" data-lang="en">
+                    <p>&copy; 2025 Rudky - Official Town Website. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Змінна для зберігання поточних даних погоди
+        let currentWeatherData = null;
+
+        // Словники для перекладу погодних умов
+        const weatherTranslations = {
+            'uk': {
+                'clear': 'ясно',
+                'clouds': 'хмарно',
+                'rain': 'дощ',
+                'drizzle': 'мряка',
+                'thunderstorm': 'гроза',
+                'snow': 'сніг',
+                'mist': 'туман',
+                'smoke': 'дим',
+                'haze': 'серпанок',
+                'dust': 'пил',
+                'fog': 'туман',
+                'sand': 'піщана буря',
+                'ash': 'вугільна зола',
+                'squall': 'шквал',
+                'tornado': 'торнадо',
+                'loading': 'Завантаження...',
+                'error': 'Помилка завантаження'
+            },
+            'en': {
+                'clear': 'clear',
+                'clouds': 'cloudy',
+                'rain': 'rain',
+                'drizzle': 'drizzle',
+                'thunderstorm': 'thunderstorm',
+                'snow': 'snow',
+                'mist': 'mist',
+                'smoke': 'smoke',
+                'haze': 'haze',
+                'dust': 'dust',
+                'fog': 'fog',
+                'sand': 'sand',
+                'ash': 'ash',
+                'squall': 'squall',
+                'tornado': 'tornado',
+                'loading': 'Loading...',
+                'error': 'Loading error'
+            }
+        };
+
+        // Відображення іконок погоди
+        const iconMap = {
+            '01d': 'fas fa-sun',
+            '01n': 'fas fa-moon',
+            '02d': 'fas fa-cloud-sun',
+            '02n': 'fas fa-cloud-moon',
+            '03d': 'fas fa-cloud',
+            '03n': 'fas fa-cloud',
+            '04d': 'fas fa-cloud',
+            '04n': 'fas fa-cloud',
+            '09d': 'fas fa-cloud-rain',
+            '09n': 'fas fa-cloud-rain',
+            '10d': 'fas fa-cloud-sun-rain',
+            '10n': 'fas fa-cloud-moon-rain',
+            '11d': 'fas fa-bolt',
+            '11n': 'fas fa-bolt',
+            '13d': 'fas fa-snowflake',
+            '13n': 'fas fa-snowflake',
+            '50d': 'fas fa-smog',
+            '50n': 'fas fa-smog',
+            'loading': 'fas fa-spinner fa-spin',
+            'error': 'fas fa-exclamation-triangle'
+        };
+
+        // Функція для оновлення інтерфейсу погоди
+        function updateWeatherUI(lang) {
+            const weatherText = document.getElementById('weather-text');
+            const weatherIcon = document.getElementById('weather-icon');
+            const weatherTitle = document.getElementById('weather-title');
+
+            // Отримуємо поточну мову
+            const currentLang = lang || document.documentElement.lang || 'uk';
+
+            // Оновлюємо заголовок
+            weatherTitle.textContent = currentLang === 'uk'
+                ? 'Погода в Рудках'
+                : 'Weather in Rudky';
+
+            if (!currentWeatherData) {
+                weatherText.textContent = weatherTranslations[currentLang]['loading'];
+                weatherIcon.innerHTML = `<i class="${iconMap['loading']}"></i>`;
+                return;
+            }
+
+            if (currentWeatherData.error) {
+                weatherText.textContent = weatherTranslations[currentLang]['error'];
+                weatherIcon.innerHTML = `<i class="${iconMap['error']}"></i>`;
+                return;
+            }
+
+            const condition = currentWeatherData.weather[0].main.toLowerCase();
+            const conditionTranslated = weatherTranslations[currentLang][condition] || condition;
+
+            const temp = Math.round(currentWeatherData.main.temp);
+            const humidity = currentWeatherData.main.humidity;
+            const windSpeed = Math.round(currentWeatherData.wind.speed);
+
+            // Оновлюємо інформацію про погоду
+            if (currentLang === 'uk') {
+                weatherText.innerHTML = `
+                    ${conditionTranslated.charAt(0).toUpperCase() + conditionTranslated.slice(1)}, ${temp}°C<br>
+                    Вологість: ${humidity}%, Вітер: ${windSpeed} м/с
+                `;
+            } else {
+                weatherText.innerHTML = `
+                    ${conditionTranslated.charAt(0).toUpperCase() + conditionTranslated.slice(1)}, ${temp}°C<br>
+                    Humidity: ${humidity}%, Wind: ${windSpeed} m/s
+                `;
+            }
+
+            // Оновлюємо іконку погоди
+            const iconCode = currentWeatherData.weather[0].icon;
+            const iconClass = iconMap[iconCode] || 'fas fa-cloud';
+            weatherIcon.innerHTML = `<i class="${iconClass}"></i>`;
+        }
+
+        // Функція для отримання погоди
+        async function fetchWeather() {
+            const apiKey = '2dffdc1273d4fbe614d103017bdeaa37';
+            const city = 'Rudky,UA';
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.cod === 200) {
+                    currentWeatherData = data;
+                } else {
+                    currentWeatherData = { error: true };
+                    console.error('Помилка отримання погоди:', data.message);
+                }
+            } catch (error) {
+                console.error('Помилка отримання погоди:', error);
+                currentWeatherData = { error: true };
+            }
+
+            // Оновлюємо інтерфейс після отримання даних
+            updateWeatherUI();
+        }
+
+        // Бізнес-дані
+        const businesses = [
+            {
+                id: 1,
+                name: "Кафе 'Каліфорнійська суші-піца'",
+                name_en: "Cafe 'California-sushi-pizza'",
+                category: "cafe",
+                description: "California Sushi & Pizza — це поєднання японської та італійської кухні з якісними інгредієнтами та швидкою доставкою. Завітай до нас або замов онлайн — задоволення гарантовано!",
+                description_en: "California Sushi & Pizza offers a perfect mix of Japanese and Italian cuisine, made with quality ingredients and fast delivery. Visit us or order online — satisfaction guaranteed!",
+                rating: 4.8,
+                address: "пл. Відродження, 25",
+                phone: "+380 67 123 4567",
+                image: "https://static.shaketopay.com.ua/backgroundimage/62116FBC8473615C04E5E4E2673A99A0.jpeg"
+            },
+            {
+                id: 2,
+                name: "Магазин 'Рукавичка'",
+                name_en: "Shop 'Rukavychka'",
+                category: "shop",
+                description: "Зручний продуктовий магазин з широким вибором товарів щоденного вжитку. Свіжі продукти, доступні ціни та привітне обслуговування — усе, що потрібно для вашого комфорту.",
+                description_en: "A convenient grocery store with a wide selection of everyday products. Fresh food, affordable prices, and friendly service — everything you need for comfort and ease.",
+                rating: 4.9,
+                address: "вул. Валова, 3",
+                phone: "+380 50 765 4321",
+                image: "https://promokarta.com/images/post/21/full-5ee78b5b00fff.jpg"
+            },
+            {
+                id: 3,
+                name: "Салон краси 'Монро'",
+                name_en: "Beauty Salon 'Monro'",
+                category: "service",
+                description: "Повний спектр послуг для краси та догляду за собою: стрижки, фарбування, манікюр, педикюр, косметологія.",
+                description_en: "Full range of beauty and care services: haircuts, coloring, manicure, pedicure, cosmetology.",
+                rating: 4.7,
+                address: "вул. Степана Бандери, 1",
+                phone: "+380 63 987 6543",
+                image: "https://lh3.googleusercontent.com/p/AF1QipNCvaKJUY4HD7olPrtbVRLxx44GCrwESe7iChWK=w600-k"
+            },
+            {
+                id: 5,
+                name: "Пекарня 'Кулиничі'",
+                name_en: "Bakery 'Kulynychi'",
+                category: "cafe",
+                description: "Свіжа випічка щодня: хліб, булочки, тістечка, тортіки. Використовуємо лише натуральні інгредієнти.",
+                description_en: "Fresh baked goods daily: bread, buns, pastries, cakes. We use only natural ingredients.",
+                rating: 4.9,
+                address: "пл. Відродження, 1",
+                phone: "+380 68 111 2233",
+                image: "https://scontent.flwo3-1.fna.fbcdn.net/v/t39.30808-6/468353240_18275754070222219_8141656661005142043_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=4AVQ3eDuY8MQ7kNvwEXXbOL&_nc_oc=AdkhpGHExlSzlEBtng1NL7kRPQnJIaZSfXtJ1ZUJ6-7lr8P8yFsms8rhD5NqdI9-HDc&_nc_zt=23&_nc_ht=scontent.flwo3-1.fna&_nc_gid=PcCr-oaNtxpzO-zaSJluKQ&oh=00_AfPgxN8wNLHXoIuj6qUHvJXfs61o8Lxi5ZVSsNlgYcqY8Q&oe=685473DA"
+            },
+        ];
+
+        // Змінні стану для фільтрації
+        let currentCategory = 'all';
+        let currentSearchTerm = '';
+
+        // Функція для відображення бізнесів з урахуванням фільтрів
+        function renderBusinesses() {
+            const container = document.getElementById('business-container');
+            if (!container) {
+                console.error("Business container not found!");
+                return;
+            }
+            container.innerHTML = '';
+
+            const currentLang = document.documentElement.lang || 'uk';
+
+            // Фільтрація бізнесів за категорією та пошуковим запитом
+            const filteredBusinesses = businesses.filter(business => {
+                // Перевірка категорії
+                const categoryMatch = currentCategory === 'all' || business.category === currentCategory;
+
+                // Перевірка пошукового запиту
+                const name = (currentLang === 'uk' ? business.name : business.name_en).toLowerCase();
+                const desc = (currentLang === 'uk' ? business.description : business.description_en).toLowerCase();
+                const searchMatch = currentSearchTerm === '' ||
+                    name.includes(currentSearchTerm) ||
+                    desc.includes(currentSearchTerm);
+
+                return categoryMatch && searchMatch;
+            });
+
+            if (filteredBusinesses.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <h4 class="text-muted">${currentLang === 'uk' ? 'Бізнеси не знайдено' : 'No businesses found'}</h4>
+                        <p>${currentLang === 'uk' ? 'Спробуйте змінити фільтри або пошуковий запит' : 'Try changing filters or search query'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Перемальовуємо відфільтровані бізнеси
+            filteredBusinesses.forEach(business => {
+                const card = document.createElement('div');
+                card.className = 'col-md-6 col-lg-4 mb-4 fade-in';
+                card.innerHTML = `
+                    <div class="business-card">
+                        <div class="business-img">
+                            <img src="${business.image}" alt="${currentLang === 'uk' ? business.name : business.name_en}">
+                        </div>
+                        <div class="business-content">
+                            <span class="business-category">${getCategoryName(business.category, currentLang)}</span>
+                            <h4>${currentLang === 'uk' ? business.name : business.name_en}</h4>
+                            <div class="business-rating">
+                                ${renderStars(business.rating)}
+                                <span>${business.rating}</span>
+                            </div>
+                            <p>${currentLang === 'uk' ? business.description : business.description_en}</p>
+                            <div class="business-meta">
+                                <div>
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${business.address}</span>
+                                </div>
+                                <div>
+                                    <i class="fas fa-phone"></i>
+                                    <span>${business.phone}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Функція для відображення зірочок рейтингу
+        function renderStars(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5;
+
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+
+            if (halfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+
+            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+
+            return stars;
+        }
+
+        // Функція для отримання назви категорії
+        function getCategoryName(category, lang) {
+            const categories = {
+                'all': { uk: 'Всі', en: 'All' },
+                'cafe': { uk: 'Кафе', en: 'Cafe' },
+                'shop': { uk: 'Магазин', en: 'Shop' },
+                'hotel': { uk: 'Житло', en: 'Accommodation' },
+                'service': { uk: 'Послуги', en: 'Services' }
+            };
+
+            return categories[category][lang];
+        }
+
+        // Зміна мови
+        const languageBtn = document.querySelector('.language-btn');
+        const languageMenu = document.querySelector('.language-menu');
+        const languageOptions = document.querySelectorAll('.language-option');
+
+        languageBtn.addEventListener('click', () => {
+            languageMenu.classList.toggle('active');
+        });
+
+        languageOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const selectedLang = option.getAttribute('data-lang');
+                changeLanguage(selectedLang);
+                languageMenu.classList.remove('active');
+            });
+        });
+
+        function changeLanguage(lang) {
+            // Приховуємо всі мовні контейнери
+            document.querySelectorAll('.language-container').forEach(container => {
+                container.classList.remove('active');
+            });
+
+            // Показуємо контейнери для обраної мови
+            document.querySelectorAll(`.language-container[data-lang="${lang}"]`).forEach(container => {
+                container.classList.add('active');
+            });
+
+            // Оновлюємо атрибут lang в кореневому елементі
+            document.documentElement.lang = lang;
+
+            // Оновлюємо погоду
+            updateWeatherUI(lang);
+
+            // Скидаємо пошуковий термін та поле вводу
+            currentSearchTerm = '';
+            document.getElementById('business-search').value = '';
+
+            // Скидаємо активний стан фільтрів
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector('.list-group-item[data-category="all"]').classList.add('active');
+            currentCategory = 'all';
+
+            // Перемальовуємо бізнеси з урахуванням поточних фільтрів
+            renderBusinesses();
+        }
+
+        // Фільтрація бізнесів за категорією
+        document.querySelectorAll('.list-group-item').forEach(item => {
+            item.addEventListener('click', function () {
+                // Оновлюємо активний пункт меню
+                document.querySelectorAll('.list-group-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                // Оновлюємо поточну категорію
+                currentCategory = this.getAttribute('data-category');
+
+                // Перемальовуємо бізнеси
+                renderBusinesses();
+            });
+        });
+
+        // Пошук бізнесів
+        document.querySelector('#business-search').addEventListener('input', function () {
+            currentSearchTerm = this.value.toLowerCase();
+            renderBusinesses();
+        });
+
+        // Кнопка пошуку
+        document.querySelector('#search-button').addEventListener('click', function () {
+            currentSearchTerm = document.querySelector('#business-search').value.toLowerCase();
+            renderBusinesses();
+        });
+
+        // Керування музикою
+        const musicBtn = document.querySelector('.music-btn');
+        const audioPlayer = document.querySelector('.audio-player');
+        const audioElement = document.getElementById('background-music');
+        const playBtn = document.querySelector('.play-btn');
+        const pauseBtn = document.querySelector('.pause-btn');
+        const volumeSlider = document.querySelector('.volume-slider');
+
+        musicBtn.addEventListener('click', () => {
+            musicBtn.classList.toggle('active');
+
+            if (musicBtn.classList.contains('active')) {
+                audioPlayer.classList.remove('hidden');
+                const savedVolume = localStorage.getItem('musicVolume');
+                audioElement.volume = savedVolume ? parseFloat(savedVolume) : 0.5;
+                volumeSlider.value = audioElement.volume;
+                audioElement.play().catch(e => console.log("Audio play error:", e));
+            } else {
+                audioPlayer.classList.add('hidden');
+                audioElement.pause();
+            }
+        });
+
+        playBtn.addEventListener('click', () => {
+            audioElement.play().catch(e => console.log("Audio play error:", e));
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            audioElement.pause();
+        });
+
+        volumeSlider.addEventListener('input', () => {
+            audioElement.volume = volumeSlider.value;
+            localStorage.setItem('musicVolume', volumeSlider.value);
+        });
+
+        // Анімація лічильників
+        function animateCounter(id, start, end, duration) {
+            let obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                obj.innerHTML = value;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Кнопка повернення нагору
+        const backToTopButton = document.querySelector('.back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Темна тема
+        const themeBtn = document.querySelector('.theme-btn');
+        themeBtn.addEventListener('click', function () {
+            document.body.classList.toggle('dark-theme');
+
+            if (document.body.classList.contains('dark-theme')) {
+                localStorage.setItem('theme', 'dark');
+                this.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                localStorage.setItem('theme', 'light');
+                this.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Ініціалізація після завантаження сторінки
+        document.addEventListener('DOMContentLoaded', () => {
+            // Переконаємось, що мова встановлена
+            if (!document.documentElement.lang) {
+                document.documentElement.lang = 'uk';
+            }
+
+            // Анімація лічильників
+            setTimeout(() => {
+                animateCounter('population-counter', 0, 5400, 2000);
+                animateCounter('year-counter', 1200, 1472, 1500);
+                animateCounter('attraction-counter', 0, 12, 1800);
+                animateCounter('area-counter', 0, 36, 1700);
+            }, 500);
+
+            // Відображення бізнесів
+            renderBusinesses();
+
+            // Перевірка збереженої теми
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            // Ініціалізація карти
+            const map = L.map('map').setView([49.6532, 23.4870], 14);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Додавання маркерів
+            const markers = [
+                {
+                    name: "Центр міста",
+                    position: [49.6532, 23.4870],
+                    description: "Центральна площа Рудок"
+                },
+                {
+                    name: "Історичний музей",
+                    position: [49.6520, 23.4850],
+                    description: "Музей історії міста"
+                },
+                {
+                    name: "Церква Св. Юрія",
+                    position: [49.6545, 23.4902],
+                    description: "Історична церква XVI століття"
+                },
+                {
+                    name: "Парк культури",
+                    position: [49.6505, 23.4803],
+                    description: "Головний парк міста"
+                }
+            ];
+
+            markers.forEach(marker => {
+                L.marker(marker.position).addTo(map)
+                    .bindPopup(`<b>${marker.name}</b><br>${marker.description}`);
+            });
+
+            // Анімації при скролі
+            const observerOptions = {
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(element => {
+                observer.observe(element);
+            });
+
+            // Додамо обробник помилок для аудіо
+            audioElement.addEventListener('error', (e) => {
+                console.error('Audio error:', e);
+                console.error('Audio error details:', audioElement.error);
+            });
+
+            // Отримання даних погоди
+            fetchWeather();
+
+            // Оновлюємо погоду кожні 10 хвилин
+            setInterval(fetchWeather, 10 * 60 * 1000);
+        });
+    </script>
+</body>
+
+</html>
